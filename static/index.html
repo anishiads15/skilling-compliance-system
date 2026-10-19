@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Training Centre Monitoring System</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brandDark: '#0f172a',
+            brandBlue: '#1e40af',
+            brandLight: '#f8fafc',
+            brandBorder: '#e2e8f0',
+          }
+        }
+      }
+    }
+  </script>
+  <script>
+    // Early theme initialization to prevent light flash
+    try {
+      if (localStorage.getItem('skilling_app_theme') === 'dark') {
+        document.documentElement.classList.add('dark');
+      }
+    } catch (e) {}
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+    .custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+
+    /* Dark Mode Theme Overrides */
+    html.dark, html.dark body { background-color: #0b0f19 !important; color: #f1f5f9 !important; }
+    html.dark #authenticatedApp { background-color: #0b0f19 !important; }
+    html.dark main { background-color: #0b0f19 !important; }
+    html.dark aside { background-color: #0f172a !important; border-color: #1e293b !important; color: #f1f5f9 !important; }
+    html.dark aside .bg-slate-50, html.dark aside .bg-slate-50\/50, html.dark aside div.p-4 { background-color: #0f172a !important; border-color: #1e293b !important; }
+    html.dark aside nav button { color: #94a3b8 !important; background-color: transparent !important; }
+    html.dark aside nav button:hover, html.dark aside nav button:focus { background-color: #1e293b !important; color: #f8fafc !important; }
+    html.dark aside nav button.bg-blue-600, html.dark aside nav button.bg-blue-600:hover { background-color: #2563eb !important; color: #ffffff !important; }
+    html.dark aside div.p-3.border-t { background-color: #0f172a !important; border-color: #1e293b !important; color: #64748b !important; }
+    
+    html.dark .bg-white { background-color: #131c2e !important; border-color: #1e293b !important; color: #f1f5f9 !important; }
+    html.dark .bg-slate-50, html.dark .bg-slate-50\/50, html.dark .bg-slate-50\/70, html.dark .bg-slate-50\/80,
+    html.dark .bg-slate-100, html.dark .bg-slate-100\/90 { background-color: #0b1120 !important; border-color: #1e293b !important; }
+    
+    html.dark .text-slate-900, html.dark .text-slate-800 { color: #f8fafc !important; }
+    html.dark .text-slate-700, html.dark .text-slate-600 { color: #cbd5e1 !important; }
+    html.dark .text-slate-500 { color: #94a3b8 !important; }
+    html.dark .text-slate-400 { color: #64748b !important; }
+    html.dark .text-slate-300 { color: #cbd5e1 !important; }
+    
+    html.dark .border-slate-100, html.dark .border-slate-200, html.dark .border-slate-200\/90, 
+    html.dark .border-slate-200\/60, html.dark .border-slate-300 { border-color: #1e293b !important; }
+    html.dark .divide-slate-100 > * + *, html.dark .divide-slate-200 > * + * { border-color: #1e293b !important; }
+    
+    html.dark input:not([type="checkbox"]):not([type="radio"]), 
+    html.dark select, 
+    html.dark textarea { 
+      background-color: #0b1120 !important; 
+      color: #f8fafc !important; 
+      border-color: #334155 !important; 
+    }
+    html.dark input::placeholder, html.dark textarea::placeholder { color: #64748b !important; }
+    html.dark input:focus, html.dark select:focus, html.dark textarea:focus { border-color: #3b82f6 !important; }
+    
+    html.dark thead, html.dark thead.bg-slate-100 { background-color: #0f172a !important; color: #94a3b8 !important; }
+    html.dark thead th { border-color: #1e293b !important; color: #94a3b8 !important; }
+    html.dark tbody tr:hover, html.dark tr.hover\:bg-slate-50:hover, html.dark tr.hover\:bg-slate-50\/70:hover { background-color: #1e293b !important; }
+    html.dark tbody td { border-color: #1e293b !important; }
+    
+    html.dark .bg-blue-50, html.dark .bg-blue-50\/70 { background-color: rgba(30, 58, 138, 0.25) !important; border-color: rgba(59, 130, 246, 0.35) !important; color: #93c5fd !important; }
+    html.dark .bg-emerald-50, html.dark .bg-emerald-50\/70 { background-color: rgba(6, 78, 59, 0.25) !important; border-color: rgba(16, 185, 129, 0.35) !important; color: #6ee7b7 !important; }
+    html.dark .bg-amber-50, html.dark .bg-amber-50\/70 { background-color: rgba(120, 53, 15, 0.25) !important; border-color: rgba(245, 158, 11, 0.35) !important; color: #fcd34d !important; }
+    html.dark .bg-red-50, html.dark .bg-red-50\/70 { background-color: rgba(127, 29, 29, 0.25) !important; border-color: rgba(239, 68, 68, 0.35) !important; color: #fca5a5 !important; }
+    html.dark .bg-cyan-50, html.dark .bg-cyan-50\/70 { background-color: rgba(22, 78, 99, 0.25) !important; border-color: rgba(6, 182, 212, 0.35) !important; color: #67e8f9 !important; }
+    
+    html.dark .text-blue-950, html.dark .text-blue-900, html.dark .text-blue-800, html.dark .text-blue-700 { color: #93c5fd !important; }
+    html.dark .text-emerald-950, html.dark .text-emerald-900, html.dark .text-emerald-800, html.dark .text-emerald-700 { color: #6ee7b7 !important; }
+    html.dark .text-amber-950, html.dark .text-amber-900, html.dark .text-amber-800, html.dark .text-amber-700 { color: #fcd34d !important; }
+    html.dark .text-red-950, html.dark .text-red-900, html.dark .text-red-800, html.dark .text-red-700 { color: #fca5a5 !important; }
+    html.dark .text-cyan-950, html.dark .text-cyan-900, html.dark .text-cyan-800 { color: #67e8f9 !important; }
+    
+    html.dark .bg-slate-200 { background-color: #1e293b !important; color: #f1f5f9 !important; border-color: #334155 !important; }
+    html.dark .bg-slate-100 { background-color: #1e293b !important; color: #cbd5e1 !important; border-color: #334155 !important; }
+    html.dark .bg-emerald-100 { background-color: rgba(6, 78, 59, 0.45) !important; color: #6ee7b7 !important; }
+    html.dark .bg-amber-100 { background-color: rgba(120, 53, 15, 0.45) !important; color: #fcd34d !important; }
+    html.dark .bg-red-100 { background-color: rgba(127, 29, 29, 0.45) !important; color: #fca5a5 !important; }
+    html.dark .bg-blue-100 { background-color: rgba(30, 58, 138, 0.45) !important; color: #93c5fd !important; }
+    
+    /* Dark Mode Tab Styles & Hover Fixes across Government and Training Centre Dashboards */
+    /* 1. Sub-tabs in Equipment Management & Navigation */
+    html.dark button.border-transparent {
+      color: #94a3b8 !important;
+      background-color: transparent !important;
+      border-color: transparent !important;
+    }
+    html.dark button.border-transparent:hover,
+    html.dark button.border-transparent:focus {
+      color: #f8fafc !important;
+      background-color: #1e293b !important;
+      border-color: #475569 !important;
+    }
+    html.dark button.border-blue-600 {
+      border-color: #3b82f6 !important;
+      color: #93c5fd !important;
+      background-color: rgba(59, 130, 246, 0.2) !important;
+    }
+    html.dark button.border-blue-600:hover {
+      border-color: #60a5fa !important;
+      color: #bfdbfe !important;
+      background-color: rgba(59, 130, 246, 0.28) !important;
+    }
+    html.dark button.border-emerald-600 {
+      border-color: #10b981 !important;
+      color: #6ee7b7 !important;
+      background-color: rgba(16, 185, 129, 0.2) !important;
+    }
+    html.dark button.border-emerald-600:hover {
+      border-color: #34d399 !important;
+      color: #a7f3d0 !important;
+      background-color: rgba(16, 185, 129, 0.28) !important;
+    }
+
+    /* 2. Camera category filter tabs & pill tabs */
+    html.dark #cameraCategoryTabs button {
+      background-color: #1e293b !important;
+      color: #cbd5e1 !important;
+      border: 1px solid #334155 !important;
+    }
+    html.dark #cameraCategoryTabs button:hover,
+    html.dark #cameraCategoryTabs button:focus {
+      background-color: #334155 !important;
+      color: #f8fafc !important;
+      border-color: #64748b !important;
+    }
+    html.dark #cameraCategoryTabs button.bg-blue-600,
+    html.dark #cameraCategoryTabs button.bg-blue-600:hover {
+      background-color: #2563eb !important;
+      color: #ffffff !important;
+      border-color: #3b82f6 !important;
+    }
+
+    /* 3. Global Dark Mode Hover Overrides to prevent white tab/button washout */
+    html.dark .hover\:bg-slate-100:hover,
+    html.dark .hover\:bg-slate-200:hover,
+    html.dark .hover\:bg-slate-50:hover,
+    html.dark .hover\:bg-white:hover {
+      background-color: #1e293b !important;
+    }
+    html.dark .hover\:text-slate-800:hover,
+    html.dark .hover\:text-slate-900:hover,
+    html.dark .hover\:text-slate-700:hover {
+      color: #f8fafc !important;
+    }
+    html.dark .hover\:border-slate-300:hover {
+      border-color: #475569 !important;
+    }
+    
+    html.dark .fixed .bg-white { background-color: #131c2e !important; border-color: #1e293b !important; color: #f1f5f9 !important; }
+    html.dark .custom-scroll::-webkit-scrollbar-thumb { background: #334155; }
+    html.dark .custom-scroll::-webkit-scrollbar-track { background: #0f172a; }
+  </style>
+  <!-- TensorFlow.js, COCO-SSD (lite_mobilenet_v2), and BlazeFace Models -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface@0.0.7/dist/blazeface.min.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen antialiased flex flex-col">
+
+  <!-- ========================================================================= -->
+  <!-- 1. LOGIN PORTAL CONTAINER (FIRST SCREEN ON LOAD - SECTIONS 1 & 2)          -->
+  <!-- ========================================================================= -->
+  <div id="loginPortalContainer" class="min-h-screen bg-slate-100 flex flex-col justify-center items-center p-4">
+    <div id="authCardWrapper" class="max-w-md w-full bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden transition-all duration-300">
+      
+      <!-- Login Top Header -->
+      <div class="bg-slate-900 text-white p-6 text-center border-b border-slate-800">
+        <div class="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-blue-600 text-white font-bold text-xl mb-3 shadow">
+          TC
+        </div>
+        <h1 class="text-xl font-bold tracking-tight">Training Centre Monitoring System</h1>
+        <p class="text-xs text-slate-400 mt-1">Compliance, Attendance & Infrastructure Monitoring</p>
+      </div>
+
+      <!-- Portal Mode Tabs: Login vs Sign Up (Section 1) -->
+      <div class="flex border-b border-slate-200 bg-slate-50 text-xs font-bold text-center">
+        <button type="button" id="tabBtnLogin" onclick="switchPortalMode('login')" class="flex-1 py-3 border-b-2 border-blue-600 text-blue-700 bg-white transition flex items-center justify-center space-x-1.5">
+          <span>🔑</span><span>LOGIN</span>
+        </button>
+        <button type="button" id="tabBtnSignup" onclick="switchPortalMode('signup')" class="flex-1 py-3 border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition flex items-center justify-center space-x-1.5">
+          <span>📝</span><span>SIGN UP</span>
+        </button>
+      </div>
+
+      <!-- ================= LOGIN MODE CONTAINER ================= -->
+      <div id="loginModeContainer">
+        <!-- Login Form Screen (Requirement 2: Registered Name & Password) -->
+        <div id="loginStep2" class="p-6 space-y-5">
+          <div class="border-b pb-3">
+            <h2 class="text-base font-bold text-slate-900">Official Portal Login</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Enter your registered name and password to access the portal</p>
+          </div>
+
+          <form id="credentialsForm" onsubmit="handleFormLogin(event)" class="space-y-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Registered Name:</label>
+              <input type="text" id="loginName" required placeholder="Enter Registered Name" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition" />
+            </div>
+
+            <!-- Additional identifier for duplicate names (Requirement 2) -->
+            <div id="loginEmailWrapper" class="hidden">
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Registered Email ID <span class="text-amber-600 font-normal">(Required to resolve duplicate name)</span>:</label>
+              <input type="email" id="loginEmail" placeholder="Enter Registered Email" class="w-full border border-amber-300 bg-amber-50/50 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition" />
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <label class="block text-xs font-semibold text-slate-700">Password:</label>
+                <button type="button" onclick="openForgotPasswordFlow()" class="text-xs text-blue-600 hover:text-blue-800 font-semibold">Forgot Password?</button>
+              </div>
+              <div class="relative">
+                <input type="password" id="loginPassword" required placeholder="Enter Password" class="w-full border border-slate-300 rounded-lg px-3 py-2 pr-10 text-sm outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition" />
+                <button type="button" onclick="togglePasswordVisibility('loginPassword', this)" aria-label="Show password" title="Show password" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none cursor-pointer">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-slate-400 hover:text-slate-600 transition" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                </button>
+              </div>
+            </div>
+
+            <div id="loginErrorMsg" class="p-2.5 bg-red-50 border border-red-200 text-red-700 text-xs rounded-lg hidden font-medium"></div>
+
+            <button type="submit" id="btnLoginSubmit" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-lg shadow transition">
+              LOGIN
+            </button>
+          </form>
+        </div>
+
+        <!-- FORGOT PASSWORD / OTP VERIFICATION FLOW (Section 5) -->
+        <div id="forgotPasswordFlow" class="p-6 space-y-4 hidden">
+          <div class="flex items-center justify-between border-b pb-3">
+            <div>
+              <h2 class="text-base font-bold text-slate-900" id="fpHeaderTitle">Reset Password</h2>
+              <div class="text-[11px] text-slate-500" id="fpHeaderSub">Secure identity verification via 4-digit OTP</div>
+            </div>
+            <button type="button" onclick="closeForgotPasswordFlow()" class="text-xs text-slate-500 hover:text-slate-800 font-medium">
+              ← Back to Login
+            </button>
+          </div>
+
+          <!-- Step A: Enter Registered Email -->
+          <div id="fpStepIdentifier" class="space-y-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Registered Email ID:</label>
+              <input type="email" id="fpIdentifier" required placeholder="Enter your registered email" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600" />
+            </div>
+            <div id="fpMsgIdentifier" class="p-2.5 bg-red-50 border border-red-200 text-red-700 text-xs rounded-lg hidden"></div>
+            <button type="button" onclick="submitForgotPasswordIdentifier()" id="btnSendOtp" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-lg shadow transition">
+              SEND OTP
+            </button>
+          </div>
+
+          <!-- Step B: Enter 4-Digit OTP Code (30s Expiry) -->
+          <div id="fpStepOtp" class="space-y-4 hidden">
+            <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-900" id="fpMaskedEmailText">
+              A 4-digit verification code has been dispatched to your email address.
+            </div>
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <label class="block text-xs font-semibold text-slate-700">Enter 4-Digit OTP:</label>
+                <span class="text-xs font-mono font-bold text-amber-700" id="fpTimerDisplay"></span>
+              </div>
+              <input type="text" id="fpOtpInput" maxlength="4" placeholder="Enter 4-digit code" class="w-full text-center tracking-widest font-mono font-bold text-xl border border-slate-300 rounded-lg px-3 py-2 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600" />
+            </div>
+            <div id="fpMsgOtp" class="p-2.5 bg-red-50 border border-red-200 text-red-700 text-xs rounded-lg hidden"></div>
+            <button type="button" onclick="submitVerifyOtp()" id="btnVerifyOtp" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-lg shadow transition">
+              VERIFY OTP
+            </button>
+            <div class="text-center">
+              <button type="button" id="btnFpResendOtp" disabled onclick="submitForgotPasswordIdentifier()" class="text-xs text-slate-400 disabled:text-slate-300 disabled:cursor-not-allowed hover:text-blue-600 font-semibold transition">
+                Resend OTP
+              </button>
+            </div>
+          </div>
+
+          <!-- Step C: Create New Password (Twice with Real-Time Matching) -->
+          <div id="fpStepNewPassword" class="space-y-4 hidden">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">New Password:</label>
+              <div class="relative">
+                <input type="password" id="fpNewPass" oninput="checkPasswordMatch()" required placeholder="Enter new password (min 6 chars)" class="w-full border border-slate-300 rounded-lg px-3 py-2 pr-10 text-sm outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600" />
+                <button type="button" onclick="togglePasswordVisibility('fpNewPass', this)" aria-label="Show password" title="Show password" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none cursor-pointer">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-slate-400 hover:text-slate-600 transition" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                </button>
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Re-enter New Password:</label>
+              <div class="relative">
+                <input type="password" id="fpConfirmPass" oninput="checkPasswordMatch()" required placeholder="Re-enter new password" class="w-full border border-slate-300 rounded-lg px-3 py-2 pr-10 text-sm outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600" />
+                <button type="button" onclick="togglePasswordVisibility('fpConfirmPass', this)" aria-label="Show password" title="Show password" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none cursor-pointer">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-slate-400 hover:text-slate-600 transition" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                </button>
+              </div>
+            </div>
+            <div id="fpPasswordMatchStatus" class="text-xs font-semibold text-slate-400">
+              Passwords must match to proceed.
+            </div>
+            <div id="fpMsgReset" class="p-2.5 bg-red-50 border border-red-200 text-red-700 text-xs rounded-lg hidden"></div>
+            <button type="button" onclick="submitConfirmNewPassword()" id="btnConfirmPassword" disabled class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold text-sm rounded-lg shadow transition">
+              CONFIRM PASSWORD
+            </button>
+          </div>
+
+          <!-- Step D: Password Reset Complete -->
+          <div id="fpStepSuccess" class="space-y-4 text-center hidden py-4">
+            <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-2xl mx-auto font-bold">
+              ✓
+            </div>
+            <h3 class="font-bold text-slate-900 text-base">Password Updated Successfully</h3>
+            <p class="text-xs text-slate-600">Your new password is now active. Please sign in with your updated credentials.</p>
+            <button type="button" onclick="closeForgotPasswordFlow()" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-lg shadow transition">
+              RETURN TO LOGIN
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= SIGN UP MODE CONTAINER (Sections 1, 2, 3, 4) ================= -->
+      <div id="signupModeContainer" class="hidden">
+        <!-- SIGN UP STEP 1: Email Input & PDF Record Verification -->
+        <div id="signupStep1" class="p-6 space-y-5">
+          <div class="text-center">
+            <h2 class="text-base font-bold text-slate-900">Official Sign Up</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Enter your approved official email address to proceed with verification</p>
+          </div>
+
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Authorised Email ID:</label>
+              <input type="email" id="signupEmailInput" required placeholder="Enter authorised email address" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600" />
+            </div>
+
+            <!-- Error message (Exact text: "This email ID cannot be signed in." when email not in PDF) -->
+            <div id="signupEmailError" class="p-2.5 bg-red-50 border border-red-200 text-red-700 text-xs font-semibold rounded-lg hidden"></div>
+
+            <button type="button" onclick="handleSignupRequestOtp()" id="btnSignupRequestOtp" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-lg shadow transition">
+              VERIFY EMAIL VIA OTP
+            </button>
+          </div>
+        </div>
+
+        <!-- SIGN UP STEP 2: 4-Digit OTP Verification (30 Seconds Validity) -->
+        <div id="signupStep2" class="p-6 space-y-4 hidden">
+          <div class="flex items-center justify-between border-b pb-3">
+            <div>
+              <h2 class="text-base font-bold text-slate-900">Email Verification</h2>
+              <p class="text-xs text-slate-500">Enter the 4-digit code sent to your email</p>
+            </div>
+            <button type="button" onclick="goToSignupStep1()" class="text-xs text-slate-500 hover:text-slate-800 font-medium">
+              ← Change Email
+            </button>
+          </div>
+
+          <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-900" id="signupTargetEmailNotice">
+            A 4-digit OTP has been dispatched to your email address.
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="block text-xs font-semibold text-slate-700">Enter 4-Digit OTP:</label>
+              <span class="text-xs font-mono font-bold text-amber-700" id="signupTimerDisplay"></span>
+            </div>
+            <input type="text" id="signupOtpInput" maxlength="4" placeholder="Enter 4-digit code" class="w-full text-center tracking-widest font-mono font-bold text-xl border border-slate-300 rounded-lg px-3 py-2 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600" />
+          </div>
+
+          <div id="signupOtpError" class="p-2.5 bg-red-50 border border-red-200 text-red-700 text-xs rounded-lg hidden"></div>
+
+          <button type="button" onclick="handleSignupVerifyOtp()" id="btnSignupVerifyOtp" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-lg shadow transition">
+            VERIFY OTP
+          </button>
+
+          <div class="text-center">
+            <button type="button" id="btnSignupResendOtp" disabled onclick="handleSignupResendOtp()" class="text-xs text-slate-400 disabled:text-slate-300 disabled:cursor-not-allowed hover:text-blue-600 font-semibold transition">
+              Resend OTP
+            </button>
+          </div>
+        </div>
+
+        <!-- SIGN UP STEP 3: Enlarge Profile Registration Page (Requirements 2 & 3) -->
+        <div id="signupStep3" class="p-6 sm:p-8 space-y-6 hidden">
+          <div class="border-b border-slate-200 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <h2 class="text-lg sm:text-xl font-bold text-slate-900" id="signupRegTitle">Official Profile Registration</h2>
+              <p class="text-xs text-slate-500 mt-0.5" id="signupRegSub">Enter your official registration details verified against authorised records</p>
+            </div>
+            <div class="inline-flex items-center space-x-1.5 px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full text-xs font-semibold self-start sm:self-auto">
+              <span>✓</span>
+              <span>Email Verified</span>
+            </div>
+          </div>
+
+          <form id="signupCompleteForm" onsubmit="handleSignupSubmit(event)" class="space-y-6">
+            <!-- Profile Photo Section (Requirement 3: Optional, neutral placeholder with exact text "Photo Pending") -->
+            <div class="p-4 bg-slate-50/80 border border-slate-200 rounded-xl flex flex-col sm:flex-row items-center sm:items-start gap-5">
+              <div class="shrink-0 flex flex-col items-center text-center">
+                <div class="w-24 h-24 rounded-xl border-2 border-slate-300 bg-white overflow-hidden shadow-sm flex items-center justify-center relative">
+                  <img id="signupPhotoPreviewImg" src="/static/demo_assets/default_avatar.svg" onerror="this.onerror=null;this.src='/static/demo_assets/default_avatar.svg';" alt="Profile Photo" class="w-full h-full object-cover" />
+                </div>
+                <!-- Status text: exact text "Photo Pending" directly below photo area -->
+                <div id="signupPhotoPendingBadge" class="mt-2 text-[11px] font-bold text-amber-800 bg-amber-100 border border-amber-300 px-2.5 py-0.5 rounded-full shadow-xs">
+                  Pending
+                </div>
+              </div>
+              <div class="flex-1 text-left space-y-2">
+                <div>
+                  <label class="block font-bold text-slate-800 text-sm">Profile Photo <span class="text-xs font-normal text-slate-500">(Optional)</span></label>
+                  <p class="text-xs text-slate-500 mt-0.5">Upload a passport-style photograph now or upload it later from your profile. Registration succeeds with or without a photo.</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-3 pt-1">
+                  <label class="cursor-pointer inline-flex items-center space-x-1.5 px-3.5 py-2 bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-lg text-xs font-semibold transition shadow-xs">
+                    <span>📷</span>
+                    <span id="signupPhotoUploadLabel">Choose Photo</span>
+                    <input type="file" id="signupPhotoFile" accept="image/*" onchange="previewSignupPhoto(this)" class="hidden" />
+                  </label>
+                  <button type="button" id="btnRemoveSignupPhoto" onclick="removeSignupPhoto()" class="hidden text-xs text-red-600 hover:text-red-800 font-semibold underline">
+                    Remove Photo
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Form Fields Grid (Requirements 2 & 3: Responsive 2-column layout) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs">
+              <!-- 1. Full Name (Required) -->
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1.5">Full Name <span class="text-red-500">*</span></label>
+                <input type="text" id="signupFullName" required placeholder="Enter full name" class="w-full border border-slate-300 rounded-lg px-3.5 py-2.5 text-sm font-medium text-slate-800 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition" />
+              </div>
+
+              <!-- 2. Date of Birth (DOB) (Required: Future dates not allowed) -->
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1.5">Date of Birth (DOB) <span class="text-red-500">*</span></label>
+                <input type="date" id="signupDob" required max="2026-10-11" class="w-full border border-slate-300 rounded-lg px-3.5 py-2.5 text-sm font-medium text-slate-800 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition" />
+              </div>
+
+              <!-- 3. Joining Year (Required: Validated reasonable year) -->
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1.5">Joining Year <span class="text-red-500">*</span></label>
+                <input type="number" id="signupYearJoined" min="1980" max="2026" required placeholder="e.g. 2024" class="w-full border border-slate-300 rounded-lg px-3.5 py-2.5 text-sm font-medium font-mono text-slate-800 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition" />
+              </div>
+
+              <!-- 4. Role (Required: Authorised records) -->
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1.5">Authorised Role <span class="text-red-500">*</span></label>
+                <select id="signupRoleSelect" onchange="onSignupScopeChanged()" class="w-full border border-slate-300 bg-white rounded-lg px-3.5 py-2.5 text-sm font-semibold text-slate-800 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition">
+                </select>
+              </div>
+
+              <!-- 5. Email Address (Required: Verified) -->
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1.5">Email Address (Verified) <span class="text-red-500">*</span></label>
+                <input type="email" id="signupEmailDisplay" disabled readonly class="w-full border border-slate-200 bg-slate-100 text-slate-600 rounded-lg px-3.5 py-2.5 text-sm font-medium cursor-not-allowed" />
+              </div>
+
+              <!-- 6. Qualification (Required) -->
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1.5">Qualification <span class="text-red-500">*</span></label>
+                <input type="text" id="signupQualification" required placeholder="e.g. Bachelor's Degree / Master's" class="w-full border border-slate-300 rounded-lg px-3.5 py-2.5 text-sm font-medium text-slate-800 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition" />
+              </div>
+
+              <!-- 8. Conditional Field: Training Centre (Shown only for Training Centre Official) -->
+              <div id="signupCentreContainer" class="hidden md:col-span-2">
+                <label class="block font-semibold text-slate-700 mb-1.5">Training Centre Assignment <span class="text-red-500">*</span></label>
+                <input type="text" id="signupCentreDisplayInput" disabled readonly class="w-full border border-blue-200 bg-blue-50/70 text-blue-900 rounded-lg px-3.5 py-2.5 text-sm font-bold cursor-not-allowed" />
+                <p class="text-[11px] text-slate-500 mt-1">Centre assignment is restricted to your authorised training centre assignment in official records.</p>
+              </div>
+            </div>
+
+            <!-- Password Creation Section (Requirement 1: Create Password & Re-enter New Password) -->
+            <div id="signupPasswordSection" class="border-t border-slate-200 pt-5 space-y-4">
+              <div>
+                <h3 class="text-sm font-bold text-slate-900 flex items-center space-x-2">
+                  <span>🔒</span>
+                  <span>Create Account Password</span>
+                </h3>
+                <p class="text-xs text-slate-500 mt-0.5">Set the login password for your official account. Both fields are mandatory.</p>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs">
+                <!-- Step 1: Create Password -->
+                <div>
+                  <label class="block font-semibold text-slate-700 mb-1.5">Create Password <span class="text-red-500">*</span></label>
+                  <div class="relative">
+                    <input type="password" id="signupNewPassword" oninput="checkSignupPasswordMatch()" required placeholder="Enter password (min 6 characters)" class="w-full border border-slate-300 rounded-lg px-3.5 py-2.5 pr-10 text-sm font-medium text-slate-800 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition" />
+                    <button type="button" onclick="togglePasswordVisibility('signupNewPassword', this)" aria-label="Show password" title="Show password" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none cursor-pointer">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-slate-400 hover:text-slate-600 transition" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Step 2: Re-enter New Password -->
+                <div>
+                  <label class="block font-semibold text-slate-700 mb-1.5">Re-enter New Password <span class="text-red-500">*</span></label>
+                  <div class="relative">
+                    <input type="password" id="signupConfirmPassword" oninput="checkSignupPasswordMatch()" required placeholder="Re-enter new password" class="w-full border border-slate-300 rounded-lg px-3.5 py-2.5 pr-10 text-sm font-medium text-slate-800 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition" />
+                    <button type="button" onclick="togglePasswordVisibility('signupConfirmPassword', this)" aria-label="Show password" title="Show password" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none cursor-pointer">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-slate-400 hover:text-slate-600 transition" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Real-time matching validation message -->
+              <div id="signupPasswordMatchStatus" class="text-xs font-semibold text-slate-400">
+                Both password fields are mandatory and must match.
+              </div>
+            </div>
+
+            <!-- Error message container -->
+            <div id="signupFormError" class="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-lg hidden font-medium"></div>
+
+            <!-- Submit & Navigation Controls -->
+            <div class="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-slate-200">
+              <button type="button" onclick="goToSignupStep1()" class="w-full sm:w-auto px-4 py-2.5 text-xs text-slate-500 hover:text-slate-800 font-semibold transition">
+                ← Back to Email
+              </button>
+              <button type="submit" id="btnSignupSubmit" disabled class="w-full sm:w-auto px-8 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold text-sm rounded-lg shadow transition">
+                CONFIRM PASSWORD
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- SIGN UP STEP 4: Registration Success Screen -->
+        <div id="signupStepSuccess" class="p-6 space-y-4 text-center hidden">
+          <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-2xl mx-auto font-bold shadow-sm">
+            ✓
+          </div>
+          <div>
+            <h3 class="font-bold text-slate-900 text-base">Registration Completed!</h3>
+            <p class="text-xs text-slate-600 mt-0.5">Your official account has been successfully created.</p>
+          </div>
+
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-left space-y-2.5 text-xs">
+            <div class="flex justify-between items-center border-b pb-2">
+              <span class="text-slate-500">Registered Name:</span>
+              <span class="font-bold text-slate-900" id="successOfficialName"></span>
+            </div>
+            <div class="flex justify-between items-center border-b pb-2">
+              <span class="text-slate-500">Assigned Role:</span>
+              <span class="font-bold text-blue-700" id="successOfficialRole"></span>
+            </div>
+            <div class="flex justify-between items-center bg-blue-50/70 p-2 rounded-lg border border-blue-200">
+              <span class="text-blue-900 font-bold">User ID:</span>
+              <span class="font-mono font-black text-sm text-blue-950 px-2 py-0.5 bg-white rounded border border-blue-300" id="successLoginId"></span>
+            </div>
+          </div>
+
+          <p class="text-[11px] text-slate-500">
+            You can now log in using your Registered Name and the password you created during signup.
+          </p>
+
+          <button type="button" onclick="handleSuccessLoginToDashboard()" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-lg shadow transition">
+            PROCEED TO DASHBOARD &rarr;
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 2. AUTHENTICATED APP SHELL (SHOWN ONLY AFTER LOGIN - SECTIONS 4 to 19)     -->
+  <!-- ========================================================================= -->
+  <div id="authenticatedApp" class="flex-1 flex flex-col hidden min-h-screen">
+
+    <!-- GLOBAL HEADER (Consistent Structure - Section 19) -->
+    <header class="bg-slate-900 text-white border-b border-slate-800 px-6 py-3 flex items-center justify-between shadow-sm sticky top-0 z-40">
+      <!-- Title & Role Branding -->
+      <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 rounded bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow">
+          TC
+        </div>
+        <div>
+          <h1 class="text-sm font-bold text-white tracking-tight">Training Centre Monitoring System</h1>
+          <div class="text-[11px] text-slate-400" id="headerSubTitle">Official Compliance Monitoring Portal</div>
+        </div>
+      </div>
+
+      <!-- Right Header Actions: Centre Selector (Gov only), Profile Badge, Logout -->
+      <div class="flex items-center space-x-4">
+        <!-- Government Official Centre Selector (Section 10) -->
+        <div id="govCentreSelectorWrapper" class="hidden flex items-center bg-slate-800 rounded-lg px-2.5 py-1 border border-slate-700">
+          <label class="text-[11px] text-slate-400 font-medium mr-2">Centre:</label>
+          <select id="govActiveCentreSelect" onchange="handleGovCentreChange(this.value)" class="bg-slate-900 text-xs text-white font-bold rounded px-2 py-1 outline-none border-0 cursor-pointer">
+            <option value="TC1">Training Centre 1</option>
+            <option value="TC2">Training Centre 2</option>
+          </select>
+        </div>
+
+        <!-- User Identity Tag & Controls -->
+        <div class="flex items-center space-x-2.5 border-l border-slate-700 pl-4">
+          <!-- Theme Switch Button (immediately to the left of the profile photo) -->
+          <button 
+            type="button" 
+            id="themeToggleBtn" 
+            onclick="toggleThemeMode()" 
+            title="Switch to Dark Mode" 
+            aria-label="Toggle Dark/Light Mode" 
+            class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition cursor-pointer flex items-center justify-center text-xs shadow-xs focus:outline-none shrink-0"
+          >
+            <span id="themeToggleIcon">🌙</span>
+          </button>
+
+          <!-- Profile Badge -->
+          <div class="flex items-center space-x-2.5 cursor-pointer hover:opacity-90 transition" onclick="navigateTo('profile')" title="View Profile">
+            <img id="headerUserPhoto" src="/static/demo_assets/profile_gov.jpg" onerror="this.onerror=null;this.src='/static/demo_assets/default_avatar.svg';" alt="User Avatar" class="w-8 h-8 rounded-full object-cover border border-slate-600" />
+            <div class="text-left text-xs">
+              <div class="font-bold text-white leading-tight" id="headerUserName">Government Official 1</div>
+              <div class="text-[10px] text-blue-400 font-medium" id="headerUserRole">Government Official</div>
+            </div>
+          </div>
+          <!-- Logout Button -->
+          <button onclick="handleLogout()" title="Logout" class="ml-2 px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-semibold rounded border border-slate-700 transition">
+            Logout
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN BODY: SIDEBAR + MAIN CONTENT AREA -->
+    <div class="flex-1 flex overflow-hidden">
+      
+      <!-- SIDEBAR (Simple, Organized, Section 5 & 19) -->
+      <aside class="w-60 bg-white border-r border-slate-200 flex flex-col shrink-0">
+        <!-- Context Card in Sidebar -->
+        <div class="p-4 border-b border-slate-100 bg-slate-50/50">
+          <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Current Scope</div>
+          <div class="text-xs font-bold text-slate-900 mt-0.5 truncate" id="sidebarScopeTitle">Training Centre 1</div>
+          <div class="text-[11px] text-slate-500 truncate" id="sidebarScopeSub">Active Session</div>
+        </div>
+
+        <!-- Navigation Links Container -->
+        <nav class="flex-1 p-3 space-y-1 overflow-y-auto custom-scroll" id="sidebarNav">
+          <!-- Populated by JS based on role -->
+        </nav>
+
+        <!-- Sidebar Footer -->
+        <div class="p-3 border-t border-slate-100 text-[11px] text-slate-400 bg-slate-50 text-center">
+          Monitoring Portal v2.0
+        </div>
+      </aside>
+
+      <!-- MAIN CONTENT AREA -->
+      <main class="flex-1 overflow-y-auto custom-scroll p-6 bg-slate-100">
+        <div id="mainContentContainer" class="max-w-6xl mx-auto">
+          <!-- Dynamic Content Pages Injected Here -->
+        </div>
+      </main>
+
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastSlot" class="fixed bottom-5 right-5 z-50 space-y-2"></div>
+
+  <!-- App Client Logic -->
+  <script src="/static/app.js?v=3.9"></script>
+</body>
+</html>

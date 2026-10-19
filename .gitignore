@@ -10,15 +10,17 @@ __pycache__/
 *.so
 .pytest_cache/
 
-# Local database (automatically recreated and seeded on first run by database.py)
+# Local databases (automatically created/seeded by database.py)
 *.db
 *.sqlite
 
-# Large raw video dumps (> 100MB)
+# Large raw video footage dumps (> 100MB)
 *.avi
+static/uploads/SIH Footage/
 frontend/uploads/SIH Footage/
 
 # Heavy pretrained neural model checkpoints (> 50MB)
+weights/clip/
 backend/weights/clip/
 backend/weights/head_yolov8n.pt
 

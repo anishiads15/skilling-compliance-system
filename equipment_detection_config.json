@@ -1,0 +1,107 @@
+{
+  "_comment": "Equipment & Person Detection Configuration for COCO + YOLO-World dual detector pipeline",
+  "yolo_world_model_path": "yolov8s-worldv2.pt",
+  "yolo_world_input_size": 960,
+  "yolo_world_interval_sec": 1.5,
+  "smoothing_window_sec": 3.0,
+  "tc1_person_conf": 0.35,
+  "tc2_person_conf": 0.2,
+  "tc1_imgsz": 640,
+  "tc2_imgsz": 1280,
+  "min_person_height_pct": 0.025,
+  "min_person_width_pct": 0.015,
+  "min_person_aspect": 0.2,
+  "max_person_aspect": 1.85,
+  "equipment_stability_min_hits": 2,
+  "equipment_stability_window": 5,
+  "equipment_hold_time_sec": 4.0,
+  "operating_hours": {
+    "TC1": {
+      "start": "00:00",
+      "end": "23:59"
+    },
+    "TC2": {
+      "start": "00:00",
+      "end": "23:59"
+    },
+    "default": {
+      "start": "00:00",
+      "end": "23:59"
+    }
+  },
+  "camera_covered_config": {
+    "confirm_duration_sec": 1.5,
+    "demo_mode": true,
+    "demo_confirm_duration_sec": 1.5,
+    "resolve_clear_frames": 2
+  },
+  "yolo_world_classes": [
+    "ceiling fan",
+    "wall fan",
+    "fan",
+    "projector",
+    "desk",
+    "computer desk",
+    "table",
+    "computer monitor",
+    "hammer",
+    "pliers",
+    "wrench",
+    "screwdriver",
+    "lathe machine",
+    "3D printer",
+    "drill press"
+  ],
+  "class_to_category_map": {
+    "person": "Attendance",
+    "laptop": "Devices",
+    "cell phone": "Devices",
+    "projector": "Devices",
+    "computer monitor": "Devices",
+    "chair": "Desks",
+    "dining table": "Desks",
+    "desk": "Desks",
+    "computer desk": "Desks",
+    "table": "Desks",
+    "ceiling fan": "Fans",
+    "wall fan": "Fans",
+    "fan": "Fans",
+    "hammer": "Tools",
+    "pliers": "Tools",
+    "wrench": "Tools",
+    "screwdriver": "Tools",
+    "lathe machine": "Machines",
+    "3D printer": "Machines",
+    "drill press": "Machines"
+  },
+  "confidence_thresholds": {
+    "person": 0.35,
+    "laptop": 0.22,
+    "cell phone": 0.25,
+    "chair": 0.18,
+    "dining table": 0.18,
+    "desk": 0.18,
+    "computer desk": 0.18,
+    "table": 0.18,
+    "computer monitor": 0.18,
+    "ceiling fan": 0.1,
+    "wall fan": 0.1,
+    "fan": 0.1,
+    "projector": 0.12,
+    "hammer": 0.15,
+    "pliers": 0.15,
+    "wrench": 0.15,
+    "screwdriver": 0.15,
+    "lathe machine": 0.28,
+    "3D printer": 0.26,
+    "drill press": 0.28
+  },
+  "category_display_labels": {
+    "Attendance": "Attendance",
+    "Devices": "Devices",
+    "Desks": "Desks",
+    "Fans": "Fans",
+    "Tools": "Tools",
+    "Machines": "Machines"
+  }
+}
