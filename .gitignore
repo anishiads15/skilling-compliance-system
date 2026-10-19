@@ -1,0 +1,27 @@
+# Environment variables and secrets
+.env
+.env.local
+.env.*.local
+
+# Python compiled files and cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+
+# Local database (automatically recreated and seeded on first run by database.py)
+*.db
+*.sqlite
+
+# Large raw video dumps (> 100MB)
+*.avi
+frontend/uploads/SIH Footage/
+
+# Heavy pretrained neural model checkpoints (> 50MB)
+backend/weights/clip/
+backend/weights/head_yolov8n.pt
+
+# OS specific files
+Thumbs.db
+.DS_Store
